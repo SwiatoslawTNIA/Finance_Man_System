@@ -10,8 +10,8 @@ void add_income_tax(void)
    new_entry.show();
    if(!save_in_file(new_entry))
    {
-      cout << "Sorry, could not save the data in file. Please try again!!!";
-      
+      std::cout << "Sorry, could not save the data in file. Please try again!!!";
+      //throw exception
    }
 
 }  
@@ -24,7 +24,7 @@ Entry process_input(void) //func has internal linkage
    using namespace print;
    system("clear");
    Entry e1;
-   std::cout << "\t\t\tEnter the income type: (max 150 chars): \n> ";
+   std::cout << "\t\t\t\tEnter the income type: (max 150 chars): \n> ";
    char income_type[151];
    while(!cin.get(income_type, 151))//if it encounters new line, then it sets failbit to false
    {
@@ -33,7 +33,9 @@ Entry process_input(void) //func has internal linkage
       clear_cin();
    }
    clear_cin();
-   std::cout << "\t\t\tEnter the income value: \n> ";
+   system("clear");
+
+   std::cout << "\t\t\t\tEnter the income value: \n> ";
    double temp_val = 0.0;
    while(!(cin >> temp_val))
    {
@@ -42,6 +44,7 @@ Entry process_input(void) //func has internal linkage
       clear_cin();
    }
    clear_cin();
+   system("clear");
    std::cout << "\t\t\tEnter the income type: (max 500 chars): \n> ";
    char message[501];
    while(!cin.get(message, 501))//if it encounters new line, then it sets failbit to false
@@ -79,10 +82,15 @@ bool save_in_file(const Entry & entry)
 
    //write json string to a file:
    std::ofstream obj;
-   obj.open("data.json", std::ios_base::out);
+   obj.open("data.json", std::ios_base::out |std::ios_base::in);
    if(obj.is_open())
    {
       std::cout << "Opened a json file.";
+      //move to the end position:
+      obj.seekp(0, std::ios_base::end);
+      //if file is empty, we don't add a comma, otherwise we do:
+      if(obj.tellp() != 0)
+         obj << ",";
       obj << jsonstr;//write
       std::cout << "Wrote. Terminating.";
    }

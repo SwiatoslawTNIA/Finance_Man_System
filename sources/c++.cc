@@ -24,7 +24,6 @@
 int main(void)
 {
   using namespace std;
-  cout << "Everything works alright.";
   initialize();
 
   Entry entry1("Something", "Anty", 22.3), entry2;
@@ -35,13 +34,15 @@ int main(void)
 }
 void initialize(void)
 {
-
-  print::print_welcome();
   char buff[100];
   bool wrong_input = true;
+  print::print_welcome();
   while(wrong_input)
   {
-    wrong_input = (bool)std::cin.getline(buff, 100);//reset the wrong input;
+    wrong_input = true;
+    wrong_input = !std::cin.getline(buff, 100);
+    
+    //reset the wrong input;
     //since cin inherits from ios_base and ios_base class has a bool template overloading, 
     //we can cast the cin class to bool type
     if(same_strings(buff, arr_input[0]))
@@ -62,8 +63,12 @@ void initialize(void)
     }
     else
       wrong_input = true;
-    std::cin.clear();//reset the failed bits
-    print::clear_cin();
+    {
+      std::cin.clear();//reset the failed bits
+      print::clear_cin();
+      std::cout << "\nPlease try again!!";
+      continue;//try next input
+    }
   };
 }
 

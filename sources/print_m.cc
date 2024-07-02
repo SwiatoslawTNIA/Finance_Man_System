@@ -1,7 +1,7 @@
 #include "print_m.h"
 namespace  print
 {
-
+   using std::cout, std::cin, std::endl;
    //---------------------------------------------------------------------------------------------------------------------
    ///the func prints the initial messages
    ///
@@ -30,5 +30,15 @@ namespace  print
        while(std::cin.get() != '\n')
          continue;
    }
-
+   void wrong_name(void)
+   {
+      cout << "What would you like to do? " << endl;
+      cout.width(30);
+      cout << "\t1.Add income taxes(Type \"add income taxes\")" << endl;
+      cout.width(30);
+      cout << "\t2.Add expense entries(Type \"add expense entries\")" << endl;
+      cout << "\t3.Edit existing entries.(Type \"add existing entries\")" << endl;
+      cout << "\t3.Delete entries.(Type \"delete entries\")" << endl;
+      cout << "> ";
+   }
 }
