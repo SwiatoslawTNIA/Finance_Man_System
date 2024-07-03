@@ -16,8 +16,9 @@ namespace  print
       cout.width(30);
       cout << "\t2.Add expense entries(Type \"add expense entries\")" << endl;
       cout << "\t3.Edit existing entries.(Type \"add existing entries\")" << endl;
-      cout << "\t3.Delete entries.(Type \"delete entries\")" << endl;
-      cout << "\t4.Quit(Type \"quit\")" << endl;
+      cout << "\t4.Delete entries.(Type \"delete entries\")" << endl;
+      cout << "\t5.Quit(Type \"quit\")" << endl;
+      cout << "\t6.Display entry(Type \"display entry\")" << endl;
       cout << "> ";
    }
    void error_message(void)

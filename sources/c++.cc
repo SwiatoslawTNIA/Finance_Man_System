@@ -26,6 +26,8 @@ int main(void)
   using namespace std;
   try
   {
+    create_file("income.json");
+    create_file("expenses.json");
     initialize();
   }
   catch(std::exception & r)
@@ -65,6 +67,8 @@ void initialize(void)
     {
       //delete entry();
     }
+    else if(same_strings(buff, arr_input[4]))
+      display_all();
     else if(same_strings(buff, "quit") || same_strings(buff, "exit"))
       break;//quit
     else
@@ -74,7 +78,6 @@ void initialize(void)
       std::cin.clear();//reset the failed bits
       print::clear_cin();
       print::error_message();
-
     }
   };
 }

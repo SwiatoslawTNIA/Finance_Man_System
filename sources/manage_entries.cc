@@ -5,7 +5,7 @@
 void create_file(const char * filename)
 {
    std::ofstream obj(filename);
-   chmod(filename, 700);//only this app and root can change the files
+   // chmod(filename, 700);//only this app and root can change the files
    obj.close();
 }
 
@@ -215,8 +215,94 @@ bool save_in_file_expenses(const Entry & entry)
    return true;
 }
 
+bool display_all(void)
+{
+   enum {DEF_BUFF_SIZE = 50};
+   std::fstream obj("income.json");//string for the data
+   if(obj.is_open())
+   {
+      //read and display the data:
+
+      //read the first char:
+      std::cout << "\n----------------------------------------Displaying taxes:---------------------\n";
+
+      std::vector<Entry>* p_data = process_string(obj);
+      for(auto &entry: *p_data)
+      {
+         std::cout << "Income Type: " << entry.get_input() << std::endl;
+         std::cout << "Message: " << entry.get_message() << std::endl;
+         std::cout << "Value: " << entry.get_value() << std::endl;
+         std::cout << "-----------------------------------------------------------------------------\n";
+      }
+      delete p_data;//obj p_data can be reused
+      
+   }
+   else if(obj.bad())
+      throw std::logic_error("Unfortunately could not access the file.");
+   else if(obj.fail())
+      throw std::exception();
+   obj.clear();
+   obj.close();
+   //display information from the second file:
+   obj.open("expenses.json");//string for the data
+      if(obj.is_open())
+      {
+         //read and display the data:
+         std::cout << "\n----------------------------------------Displaying Expenses:---------------------\n";
+         //read the first char:
+         std::vector<Entry>* p_data = process_string(obj);
+         for(auto &entry: *p_data)
+         {
+            std::cout << "Income Type: " << entry.get_input() << std::endl;
+            std::cout << "Message: " << entry.get_message() << std::endl;
+            std::cout << "Value: " << entry.get_value() << std::endl;
+            std::cout << "-----------------------------------------------------------------------------\n";
+         }
+      delete p_data;
+   }
+   else if(obj.bad())
+      throw std::logic_error("Unfortunately could not access the file.");
+   else if(obj.fail())
+      throw std::exception();
+}
+std::vector<Entry>* process_string(std::istream & s)
+{
+   char input[151], comment[501], value[30];
+   char bigarr[1000], letter;//to store the whole string
+   unsigned int index = 0, index_m = 0, index_v = 0;
+
+   auto entries = new std::vector<Entry>();
+
+   while(s.getline(bigarr, 1000, '}') && (((letter = s.get()) == ',') || letter == ']'))
+   {
+      //got the object:
+      while((letter = s.get()) != ':')
+         continue;
+      s.get();//get the "
+      while((letter = s.get()) != '\"')
+         input[index++] = letter;
+      input[index] = '\0';//terminate
+      
+      while((letter = s.get()) != ':')
+         continue;
+      s.get();//read one more char
+      while((letter = s.get()) != '\"')
+         comment[index_m++] = letter;
+      comment[index_m] = '\0';
+
+      while((letter = s.get()) != ':')
+         continue;
+      
+      while((letter = s.get()) != '}')
+         value[index_v++] = letter;
+      value[index_v] = '\0';
 
 
+      // Entry new_entry(input, comment, atod(value));
+      entries->emplace_back(input, comment, std::__cxx11::stod(value));
+   }
+   return entries;
+}
 
 
 

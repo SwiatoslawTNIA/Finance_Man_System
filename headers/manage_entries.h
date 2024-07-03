@@ -6,6 +6,8 @@
 #include <exception>
 #include "sys/stat.h"//to change the permissions for files
 #include <stdexcept>
+#include <sstream>
+#include <vector>
 //own implementations:
 #include "entry.h"
 #include "print_m.h"
@@ -21,5 +23,5 @@ void add_expense_entries(void);
 Entry process_expenses(void); //func has internal linkage
 bool save_in_file_expenses(const Entry & entry);
 void create_file(const char * filename);
-
-
+std::vector<Entry>* process_string(std::istream & input_array);
+bool display_all(void);
