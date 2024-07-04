@@ -18,6 +18,7 @@ vpath %.h headers
 %.o: %.c++
 	$(COMPILE.C) $(OUTPUT_OPTION) $<
 
+.PHONY: in, out
 run: c++
 	valgrind ./c++
 c++: c++.o string_op.o entry.o print_m.o manage_entries.o

@@ -3,8 +3,6 @@
 //
 // <Finance managment system>
 // Manages Add, edit, and delete income and expense entries.
-// Categorize expenses (e.g., food, transport, entertainment).
-// Generate reports and summaries for different time periods.
 // Save and load data from a file.
 
 //
@@ -26,8 +24,6 @@ int main(void)
   using namespace std;
   try
   {
-    create_file("income.json");
-    create_file("expenses.json");
     initialize();
   }
   catch(std::exception & r)
@@ -61,7 +57,7 @@ void initialize(void)
     } 
     else if(same_strings(buff, arr_input[2]))
     {
-       //edit_entry();
+      edit_existing_entries();
     }
     else if(same_strings(buff, arr_input[3]))
     {
@@ -71,6 +67,8 @@ void initialize(void)
       display_all();
     else if(same_strings(buff, "quit") || same_strings(buff, "exit"))
       break;//quit
+    else if(same_strings(buff, "clear"))
+      system("clear");
     else
       correct_value = false;//set the input to false
     if(!(correct_value && correct_input))
@@ -79,6 +77,7 @@ void initialize(void)
       print::clear_cin();
       print::error_message();
     }
+    print::clear_cin();
   };
 }
 

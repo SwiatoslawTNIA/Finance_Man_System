@@ -1,0 +1,17 @@
+Welcome to the finance managment system
+What would you like to do? 
+	1.Add income taxes(Type "add income taxes")
+	2.Add expense entries(Type "add expense entries")
+	3.Edit existing entries.(Type "add existing entries")
+	4.Delete entries.(Type "delete entries")
+	5.Quit(Type "quit")
+	6.Display entry(Type "display entry")
+> Please try again!
+> What would you like to do? 
+	1.Add income taxes(Type "add income taxes")
+	2.Add expense entries(Type "add expense entries")
+	3.Edit existing entries.(Type "add existing entries")
+	4.Delete entries.(Type "delete entries")
+	5.Quit(Type "quit")
+	6.Display entry(Type "display entry")
+> 

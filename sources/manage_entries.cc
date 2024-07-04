@@ -2,14 +2,143 @@
 #include "manage_entries.h"
 
 
+char * entry_name = nullptr;//internal linkage
+unsigned int entry_name_length;//is initialized to 0 (SSD)
+
+bool file_is_empty(std::ifstream & s)
+{
+   return s.peek() == std::ifstream::traits_type::eof();
+}
+bool file_is_empty(std::fstream & s)
+{
+   return s.peek() == std::fstream::traits_type::eof();
+}
+
+
+void edit_existing_entries(void)
+{
+   std::cout << "\tPlease enter the entries type (1 = for income taxes, 2 = expenses):\n> ";
+   int n;
+   while(!(std::cin >> n) && n != 1 && n != 2)
+   {
+      std::cout << "\nInvalid Input! Try again:\n> ";
+      std::cin.clear();
+      print::clear_cin();
+   }
+   if( n == 1)
+   {
+      TAXES = 1;
+      EXPENSES = 0;
+   }
+   else if(n == 2)
+   {
+      EXPENSES  = 1; 
+      TAXES = 0;
+   }
+   
+   if(TAXES)
+      edit_file("income.json");
+   else if(EXPENSES)
+      edit_file("expenses.json");
+
+}
+
+bool edit_file(const char *file)
+{
+   //approach: read the whole file, find the location that is needed to be changed, 
+   //change the location while reading, and then restore the rest of the file.
+   //I'd need to copy a file to a temp location, since when reading & writing simultaneously
+   //i can overwrite the existing data(when I add new data thus increasing the total length)
+   std::fstream obj(file, std::ios_base::in | std::ios_base::out);
+   if(file_is_empty(obj))
+   {
+      std::cout << "Can not change an empty file. Please add data first!!!";
+   }
+   //check if the file is empty:
+   if(obj.is_open())
+   {
+      obj.seekp(0, std::ios_base::end);//move to the start
+      //create a temp file, store the data there, while storing, change
+      std::ofstream temp_f("temp.txt", std::ios_base::out | std::ios_base::app);
+      if(!temp_f.is_open())
+      {
+         std::cerr << "\nCould not create a temp file. Error!";
+         throw std::exception();
+      }
+      //search for the entry:
+      if(entry_name == nullptr)
+         print::get_name();//get the entry_name pointer a value
+
+      char c;
+      bool open_bracket = false, found = true;
+      unsigned int index = 0;
+
+      while(obj.get(c) && !found)//while we can read, if EOF, then eofbit is set, obj.get is false
+      {//the pattern: "name":
+         if(c == '\"' && open_bracket == false)
+            open_bracket = true;
+         if(open_bracket == true)
+         {//check if the strings match:
+            while((c = obj.get()) == entry_name[index])
+            {
+               ++index;
+               continue;
+            }
+            //if the the strings match, then index = entry_name_length -1
+            if(entry_name_length - 1 == index && (c = obj.get()) == '\"')
+            {
+               found = true;
+               break;
+            }
+            else
+            {
+               open_bracket = found = false;
+               index = 0;
+               //if the strings doesn't match, then we write the chars that did match:
+               for(unsigned int i = 0; i < index; ++i)
+               {
+                  temp_f << entry_name[i];//store in the temp file the part that matched
+               }
+               temp_f  << c;//store the character that did not match(while loop above)
+            }
+         }
+         temp_f << c;//write chars that we read;
+      }
+      if(found)
+      {
+         Entry e;
+         if(EXPENSES)
+         {
+            e = process_expenses();
+            store_in_file(e, temp_f);
+         }
+         else 
+         {
+            e = process_input();
+            store_in_file(e, temp_f);
+         }
+         
+      }
+      else
+      {
+         std::cout << "The object hasn't been detected! Please ensure that the name is correct.";
+      }
+   }
+   else if(obj.bad())
+      throw std::exception();
+   else if(obj.fail())//both failbit and badbit is set
+    throw std::runtime_error("Unable to write to the income.json obj");
+
+   obj.clear();
+   obj.close();
+
+}
 void create_file(const char * filename)
 {
    std::ofstream obj(filename);
    // chmod(filename, 700);//only this app and root can change the files
    obj.close();
 }
-
-
 void add_income_tax(void)
 {
    Entry entry = process_input();
@@ -62,6 +191,7 @@ Entry process_input(void) //func has internal linkage
    Entry e(income_type, message, temp_val);
    return e;
 }
+
 bool save_in_file_input(const Entry & entry)
 {
    rapidjson::Document doc;
@@ -90,8 +220,8 @@ bool save_in_file_input(const Entry & entry)
    obj.open("income.json", std::ios_base::in | std::ios_base::out);
    if(obj.is_open())
    {
-      obj.seekp(0, std::ios_base::end);//move to the start
-      std::streampos pos = obj.tellp();//if the next char is not EOF, the file is not empty
+      obj.seekp(0, std::ios_base::end);
+      std::streampos pos = obj.tellp();
       if(pos == 0)
          obj << "[";
       else
@@ -100,7 +230,6 @@ bool save_in_file_input(const Entry & entry)
          obj << "\n,";
       }
       obj << jsonstr << "]";
-      std::cout << "Wrote. Terminating.";
    }
    else if(obj.bad())
       throw std::exception();
@@ -111,6 +240,40 @@ bool save_in_file_input(const Entry & entry)
    return true;
 }
 //expense methods:
+bool store_in_file(const Entry & entry, std::ofstream & obj)
+{
+   rapidjson::Document doc;
+   doc.SetObject();//create an obj
+   
+   
+   //add data to the document:
+   rapidjson::Document::AllocatorType& allocator = doc.GetAllocator();
+   //proper value wrapping:
+   rapidjson::Value income_value;
+   income_value.SetString(entry.get_input(), allocator);
+   if(EXPENSES)
+   {
+      doc.AddMember(rapidjson::StringRef("exp_type"), income_value, allocator);
+   }
+   else
+      doc.AddMember(rapidjson::StringRef("income_type"), income_value, allocator);
+
+   rapidjson::Value message;
+   message.SetString(entry.get_message(), allocator);
+   doc.AddMember(rapidjson::StringRef("message"), message, allocator);
+
+   doc.AddMember(rapidjson::StringRef("value"), rapidjson::Value(entry.get_value()), allocator);
+   //convert to json string:
+   rapidjson::StringBuffer buff;
+   rapidjson::Writer<rapidjson::StringBuffer>writer(buff);
+   doc.Accept(writer);
+   std::string jsonstr = buff.GetString();//retrieve the string from the buffer
+
+   //write json string to a file:
+   obj << jsonstr;
+   return true;
+}
+
 
 void add_expense_entries(void)
 {
@@ -160,7 +323,6 @@ Entry process_expenses(void) //func has internal linkage
       cin.clear();//reset the failbits
       clear_cin();
    }
-   clear_cin();
    Entry e(expense_type, message, temp_val);
    return e;
 }
@@ -193,9 +355,8 @@ bool save_in_file_expenses(const Entry & entry)
    obj.open("expenses.json", std::ios_base::in | std::ios_base::out);
    if(obj.is_open())
    {
-      std::cout << "Opened a json file.";
-      obj.seekp(0, std::ios_base::end);//move to the start
-      std::streampos pos = obj.tellg();//if the next char is not EOF, the file is not empty
+      obj.seekp(0, std::ios_base::end);//
+      std::streampos pos = obj.tellg();//
       if(pos == 0)
          obj << "[";
       else
@@ -204,7 +365,6 @@ bool save_in_file_expenses(const Entry & entry)
          obj << ",\n";
       }
       obj << jsonstr << "]";
-      std::cout << "Wrote. Terminating.";
    }
    else if(obj.bad())
       throw std::exception();
@@ -217,91 +377,13 @@ bool save_in_file_expenses(const Entry & entry)
 
 bool display_all(void)
 {
-   enum {DEF_BUFF_SIZE = 50};
-   std::fstream obj("income.json");//string for the data
-   if(obj.is_open())
-   {
-      //read and display the data:
-
-      //read the first char:
-      std::cout << "\n----------------------------------------Displaying taxes:---------------------\n";
-
-      std::vector<Entry>* p_data = process_string(obj);
-      for(auto &entry: *p_data)
-      {
-         std::cout << "Income Type: " << entry.get_input() << std::endl;
-         std::cout << "Message: " << entry.get_message() << std::endl;
-         std::cout << "Value: " << entry.get_value() << std::endl;
-         std::cout << "-----------------------------------------------------------------------------\n";
-      }
-      delete p_data;//obj p_data can be reused
-      
-   }
-   else if(obj.bad())
-      throw std::logic_error("Unfortunately could not access the file.");
-   else if(obj.fail())
-      throw std::exception();
-   obj.clear();
-   obj.close();
-   //display information from the second file:
-   obj.open("expenses.json");//string for the data
-      if(obj.is_open())
-      {
-         //read and display the data:
-         std::cout << "\n----------------------------------------Displaying Expenses:---------------------\n";
-         //read the first char:
-         std::vector<Entry>* p_data = process_string(obj);
-         for(auto &entry: *p_data)
-         {
-            std::cout << "Income Type: " << entry.get_input() << std::endl;
-            std::cout << "Message: " << entry.get_message() << std::endl;
-            std::cout << "Value: " << entry.get_value() << std::endl;
-            std::cout << "-----------------------------------------------------------------------------\n";
-         }
-      delete p_data;
-   }
-   else if(obj.bad())
-      throw std::logic_error("Unfortunately could not access the file.");
-   else if(obj.fail())
-      throw std::exception();
-}
-std::vector<Entry>* process_string(std::istream & s)
-{
-   char input[151], comment[501], value[30];
-   char bigarr[1000], letter;//to store the whole string
-   unsigned int index = 0, index_m = 0, index_v = 0;
-
-   auto entries = new std::vector<Entry>();
-
-   while(s.getline(bigarr, 1000, '}') && (((letter = s.get()) == ',') || letter == ']'))
-   {
-      //got the object:
-      while((letter = s.get()) != ':')
-         continue;
-      s.get();//get the "
-      while((letter = s.get()) != '\"')
-         input[index++] = letter;
-      input[index] = '\0';//terminate
-      
-      while((letter = s.get()) != ':')
-         continue;
-      s.get();//read one more char
-      while((letter = s.get()) != '\"')
-         comment[index_m++] = letter;
-      comment[index_m] = '\0';
-
-      while((letter = s.get()) != ':')
-         continue;
-      
-      while((letter = s.get()) != '}')
-         value[index_v++] = letter;
-      value[index_v] = '\0';
-
-
-      // Entry new_entry(input, comment, atod(value));
-      entries->emplace_back(input, comment, std::__cxx11::stod(value));
-   }
-   return entries;
+   std::ifstream obj("income.json", std::ios_base::in);//string for the data
+   //display information in the file income.json:
+   process_print(obj, "Income");
+   //display information in the file expenses.json:
+   obj.open("expenses.json");
+   process_print(obj, "Expenses");
+   return true;
 }
 
 

@@ -56,4 +56,73 @@ bool same_strings(const char * s1, const char *s2)
   return true;
 }
 
+bool process_print(std::ifstream & obj, const char *header_n)
+{
+  using std::cout, std::endl;//for output
+  if(obj.is_open())
+   {
+      //check if the file is empty, if it is not empty, then display the message, otherwise quit:
+      if(obj.peek() == std::ifstream::traits_type::eof())//if eof is the next char
+      {
+         cout << "\nThere is no information about the " << header_n 
+         << ", you have to write data first!!!\n\n";
+         obj.clear();
+         obj.close();
+         return true;//exit
+      }
+      std::cout << "\n----------------------------------------Displaying " << 
+      header_n << ":---------------------"
+      << "----------------------------\n";
+      while(!obj.eof())
+      {
+         char c;
+         while((c = obj.get()) != ':')
+            continue;//move to the first entry
+         obj.get();//get the "\"" char
+         std::cout << header_n << ":  ";
 
+         while((c = obj.get()) != '\"')
+            cout << c;
+         std::cout << "\n";
+
+         //second entry:
+         while((c = obj.get()) != ':')
+            continue;//move to the message entry
+         obj.get();//get the "
+
+         char comment[501];//store the message(value will be displayed first)
+         int index = 0;
+         while((c = obj.get()) != '\"')
+            comment[index++] = c;
+         comment[index] = '\0';
+         //third entry:
+         while((c = obj.get()) != ':')
+            continue;//move to the message entry
+
+         std::cout << "Value: \t ";
+         while((c = obj.get()) != '}')
+            cout << c;
+         
+         index = 0;
+         cout << endl << "Comment: ";
+         while(comment[index] != '\0')//
+            cout << comment[index++];
+
+         std::cout << endl << "-------------------------------------------------------------------------"
+         << "---------------------------------\n";
+         //we can encounter ]
+         if((c = obj.get()) == ']')//if we encouter the end of array, we exit
+         {
+            cout << endl;//flush the buffer + new_line
+            break;//exit the loop;
+         }
+      }
+   }
+   else if(obj.bad())
+      throw std::logic_error("Unfortunately could not access the file.");
+   else if(obj.fail())
+      throw std::exception();
+   obj.clear();
+   obj.close();
+   return true;
+}
