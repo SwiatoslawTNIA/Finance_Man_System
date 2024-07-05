@@ -132,7 +132,7 @@ bool edit_file(const char *file)
    obj.clear();
    obj.close();
 
-}
+}  
 void create_file(const char * filename)
 {
    std::ofstream obj(filename);
