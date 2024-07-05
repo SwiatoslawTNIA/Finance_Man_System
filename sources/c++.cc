@@ -32,8 +32,6 @@ int main(void)
   }
   Entry entry1("Something", "Anty", 22.3), entry2;
   entry2 = entry1;
-
-  
   return 0;
 }
 void initialize(void)
@@ -61,7 +59,7 @@ void initialize(void)
     }
     else if(same_strings(buff, arr_input[3]))
     {
-      //delete entry();
+      delete_entry();
     }
     else if(same_strings(buff, arr_input[4]))
       display_all();
@@ -73,8 +71,7 @@ void initialize(void)
       correct_value = false;//set the input to false
     if(!(correct_value && correct_input))
     {
-      std::cin.clear();//reset the failed bits
-      print::clear_cin();
+      std::cin.clear();//clera the failbits
       print::error_message();
     }
     print::clear_cin();

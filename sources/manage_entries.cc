@@ -35,103 +35,166 @@ void edit_existing_entries(void)
       EXPENSES  = 1; 
       TAXES = 0;
    }
-   
-   if(TAXES)
-      edit_file("income.json");
-   else if(EXPENSES)
-      edit_file("expenses.json");
-
+   (TAXES)? edit_file("income.json"): edit_file("expenses.json");
 }
 
-bool edit_file(const char *file)
+void delete_entry(void)
 {
-   //approach: read the whole file, find the location that is needed to be changed, 
-   //change the location while reading, and then restore the rest of the file.
-   //I'd need to copy a file to a temp location, since when reading & writing simultaneously
-   //i can overwrite the existing data(when I add new data thus increasing the total length)
+   std::cout << "Please indicate the type of entry to delete: (income tax : 1, expenses: 2)";
+   
+   int n = 0;
+   while(!(std::cin >> n) && n != 1 && n != 2)
+   {
+      std::cin.clear();
+      print::clear_cin();
+      std::cout << "\nPlease enter a valid number!";
+   }
+   (n == 1)? (TAXES = 1,EXPENSES = 0): (EXPENSES = 1, TAXES = 0);
+   (TAXES)? delete_from_file("income.json"): delete_from_file("expenses.json");
+}
+
+
+bool delete_from_file(const char *file)
+{
    std::fstream obj(file, std::ios_base::in | std::ios_base::out);
+   obj.seekp(0);//move to the start
    if(file_is_empty(obj))
    {
-      std::cout << "Can not change an empty file. Please add data first!!!";
+      std::cout << "Can not delete from an empty file. Please add data first!!!";
    }
-   //check if the file is empty:
+
    if(obj.is_open())
    {
-      obj.seekp(0, std::ios_base::end);//move to the start
-      //create a temp file, store the data there, while storing, change
-      std::ofstream temp_f("temp.txt", std::ios_base::out | std::ios_base::app);
+      std::ofstream temp_f("temp.json");
       if(!temp_f.is_open())
       {
          std::cerr << "\nCould not create a temp file. Error!";
          throw std::exception();
       }
-      //search for the entry:
-      if(entry_name == nullptr)
-         print::get_name();//get the entry_name pointer a value
+      print::delete_name();//get the entry_name pointer a value
+      bool found = false;
+      char buff[1000];
+      bool first = false;
+      while(obj.getline(buff, 1000, '}') && !found)
+      {
+         if(search_for_string(buff, entry_name))
+            found = true;
 
-      char c;
-      bool open_bracket = false, found = true;
-      unsigned int index = 0;
-
-      while(obj.get(c) && !found)//while we can read, if EOF, then eofbit is set, obj.get is false
-      {//the pattern: "name":
-         if(c == '\"' && open_bracket == false)
-            open_bracket = true;
-         if(open_bracket == true)
-         {//check if the strings match:
-            while((c = obj.get()) == entry_name[index])
-            {
-               ++index;
-               continue;
-            }
-            //if the the strings match, then index = entry_name_length -1
-            if(entry_name_length - 1 == index && (c = obj.get()) == '\"')
-            {
-               found = true;
-               break;
-            }
-            else
-            {
-               open_bracket = found = false;
-               index = 0;
-               //if the strings doesn't match, then we write the chars that did match:
-               for(unsigned int i = 0; i < index; ++i)
-               {
-                  temp_f << entry_name[i];//store in the temp file the part that matched
-               }
-               temp_f  << c;//store the character that did not match(while loop above)
-            }
+         if (first) {
+            temp_f << buff << "}";
+            first = false;
+         } 
+         else 
+         {
+            temp_f << buff << "}";
          }
-         temp_f << c;//write chars that we read;
+         if(obj.peek() == ']')
+         {
+            temp_f << ']';
+            break;
+         }
       }
       if(found)
       {
-         Entry e;
-         if(EXPENSES)
-         {
-            e = process_expenses();
-            store_in_file(e, temp_f);
-         }
-         else 
-         {
-            e = process_input();
-            store_in_file(e, temp_f);
-         }
-         
+         //write the rest of the file to the new file:
+         while(obj.getline(buff, 1000, '}'))
+         {//while not end of file has been reached
+            temp_f << ", " << buff << "}";
+         }        
+         temp_f << ']';//add the closing bracket
       }
       else
-      {
-         std::cout << "The object hasn't been detected! Please ensure that the name is correct.";
-      }
+         std::cerr << "The object hasn't been detected! Please ensure that the name is correct.\n";
+      temp_f.close();
+      obj.clear();
+      obj.close();
+      if(remove(file) != 0)
+         throw std::exception();
+      if(rename("temp.json", file) != 0)
+         throw std::exception();
+      if(found)
+         std::cout << "\nYour entry has been successfully stored.\n";
    }
    else if(obj.bad())
       throw std::exception();
+
    else if(obj.fail())//both failbit and badbit is set
     throw std::runtime_error("Unable to write to the income.json obj");
+   //free the global entry_name pointer:
+   delete [] entry_name;
+
+   
+   return true;
+}
+//approach: read the whole file, find the location that is needed to be changed, 
+   //change the location while reading, store the changes in the temp_file, 
+   //delete the real file, rename the temp file to the real one.
+bool edit_file(const char *file)
+{
+   std::fstream obj(file, std::ios_base::in | std::ios_base::out);
+   obj.seekp(0);//move to the start
+   if(file_is_empty(obj))
+   {
+      std::cout << "Can not change an empty file. Please add data first!!!";
+   }
+
+   if(obj.is_open())
+   {
+      std::ofstream temp_f("temp.json");
+      if(!temp_f.is_open())
+      {
+         std::cerr << "\nCould not create a temp file. Error!";
+         throw std::exception();
+      }
+      print::get_name();//get the entry_name pointer a value
+      bool found = false;
+      char buff[1000];
+      bool first = false;
+      while(obj.getline(buff, 1000, '}') && !found)
+      {
+         if(search_for_string(buff, entry_name))
+         {
+            found = true;
+            break;
+         }
+
+         temp_f << buff << '}';
+         if(obj.peek() == ']')
+            break;
+      }
+      if(found)
+      {
+         Entry e = (EXPENSES)? process_expenses(): process_input();
+         store_in_file(e, temp_f); 
+         while (obj.getline(buff, 1000, '}')) 
+         {
+            if(!obj.eof())
+               temp_f << buff << "}";
+            else
+               temp_f << buff;//without the last }
+         }   
+      }
+      else
+         std::cerr << "The object hasn't been detected! Please ensure that the name is correct.\n";
+   
+      if(remove(file) != 0)
+         throw std::exception();
+      if(rename("temp.json", file) != 0)
+         throw std::exception();
+      if(found)
+         std::cout << "\nYour entry has been successfully stored.\n";
+   }
+   else if(obj.bad())
+      throw std::exception();
+
+   else if(obj.fail())//both failbit and badbit is set
+    throw std::runtime_error("Unable to write to the income.json obj");
+   //free the global entry_name pointer:
+   delete [] entry_name;
 
    obj.clear();
    obj.close();
-
+   return true;
 }  
 void create_file(const char * filename)
 {
@@ -187,7 +250,6 @@ Entry process_input(void) //func has internal linkage
       cin.clear();//reset the failbits
       clear_cin();
    }
-   clear_cin();
    Entry e(income_type, message, temp_val);
    return e;
 }
@@ -244,8 +306,6 @@ bool store_in_file(const Entry & entry, std::ofstream & obj)
 {
    rapidjson::Document doc;
    doc.SetObject();//create an obj
-   
-   
    //add data to the document:
    rapidjson::Document::AllocatorType& allocator = doc.GetAllocator();
    //proper value wrapping:
@@ -268,9 +328,14 @@ bool store_in_file(const Entry & entry, std::ofstream & obj)
    rapidjson::Writer<rapidjson::StringBuffer>writer(buff);
    doc.Accept(writer);
    std::string jsonstr = buff.GetString();//retrieve the string from the buffer
-
    //write json string to a file:
-   obj << jsonstr;
+   std::cout << jsonstr;
+   if(obj.tellp() == 0)//if it is the first object
+   {
+      obj << '[' << jsonstr;
+   }
+   else 
+      obj << ",\n" << jsonstr;//add the closing bracket
    return true;
 }
 

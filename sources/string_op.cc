@@ -126,3 +126,22 @@ bool process_print(std::ifstream & obj, const char *header_n)
    obj.close();
    return true;
 }
+bool search_for_string(const char *target, const char *source)//target is always longer than source
+{
+   bool same = true;
+   while(*target != ':')
+   {
+      ++target;//iterate to the first "
+      continue;
+   }
+   target += 2;//get the :"
+   while(*source && *target) //false when both are nullptr
+   {
+      if(*target != *source)
+         return false;
+
+      target++;
+      source++;
+   }
+   return same;
+}

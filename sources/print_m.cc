@@ -15,13 +15,13 @@ namespace  print
 
       cout << "What would you like to do? " << endl;
       cout.width(30);
-      cout << "\t1.Add income taxes(Type \"add income taxes\")" << endl;
+      cout << "\t1.Add income taxes(Type \"add income\")" << endl;
       cout.width(30);
-      cout << "\t2.Add expense entries(Type \"add expense entries\")" << endl;
-      cout << "\t3.Edit existing entries.(Type \"edit existing entries\")" << endl;
-      cout << "\t4.Delete entries.(Type \"delete entries\")" << endl;
+      cout << "\t2.Add expense entries(Type \"add expense\")" << endl;
+      cout << "\t3.Edit existing entries.(Type \"edit\")" << endl;
+      cout << "\t4.Delete entries.(Type \"delete\")" << endl;
       cout << "\t5.Quit(Type \"quit\")" << endl;
-      cout << "\t6.Display entry(Type \"display entry\")" << endl;
+      cout << "\t6.Display entry(Type \"display\")" << endl;
       cout << "> ";
    }
    void error_message(void)
@@ -53,5 +53,22 @@ namespace  print
       entry_name = new char[strlen(buff) + 1];
       strcpy(entry_name, buff);
       entry_name_length = strlen(entry_name);
+   }
+   
+   void delete_name(void)
+   {
+      clear_cin();
+      std::cout << "\nPlease enter the name of the entry to delete (max 150 chars): \n> ";
+      std::string input;
+      while(!(cin >> input))
+      {
+         cout << "\nPlease try again!!!";
+         cin.clear();//clear the error bits
+         print::clear_cin();
+      }
+      entry_name = new char[strlen(input.c_str()) + 1];
+      strcpy(entry_name, input.c_str());
+      entry_name_length = strlen(entry_name);
+      
    }
 }

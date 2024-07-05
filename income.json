@@ -1,9 +1,8 @@
-[{"income_type":"asdjfkl;","message":"asdfjkl;","value":234.0}
-,{"income_type":"asdjfkl;","message":"asdjfkl;","value":234.0}
-,{"income_type":"asdjfkl;","message":"asdjfkl;","value":234.0}
-,{"income_type":"asdjfkl;","message":"asdjfkl;","value":234.0}
-,{"income_type":"asdjfkl;","message":"asdjfkl;","value":234.0}
-,{"income_type":"asdjfkl;","message":"asdjfkl;","value":234.0}
-,{"income_type":"asdjfkl;","message":"asdjfkl;","value":234.0}
-,{"income_type":"asdjfkl;","message":"asdjfkl;asdf","value":234.0}
-,{"income_type":"asdjfkl;","message":"asdjfkl;asdf","value":234.0}]
+[
+{"income_type":"Something","message":"any","value":1.0},
+{"income_type":"asdjfk;l","message":"OHOHOH","value":-1.0},
+{"income_type":"something","message":"adsf","value":2.0}, 
+{"exp_type":"asdjfkl;","message":"asdjfkl;asdf","value":234.0}, 
+{"exp_type":"asdjfkl;","message":"asdjfkl;asdf","value":234.0}, 
+{"exp_type":"asdjfkl;","message":"asdjfkl;asdf","value":234.0}, 
+{"exp_type":"asdjfkl;","message":"asdjfkl;asdf","value":234.0} ]

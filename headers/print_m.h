@@ -10,4 +10,5 @@ namespace print
    void clear_cin(void);
    void error_message(void);
    void get_name(void);
+   void delete_name(void);
 }

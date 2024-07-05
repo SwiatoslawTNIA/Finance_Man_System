@@ -31,6 +31,8 @@ bool file_is_empty(std::fstream & s);
 void edit_existing_entries(void);
 bool store_in_file(const Entry & e, std::ofstream & is);
 bool edit_file(const char *file);
+bool search_for_string(const char *target, const char *sources);
+void delete_entry(void);
+bool delete_from_file(const char *file);
 //other :
 static unsigned short int TAXES, EXPENSES;//static, each file has it's own copy
-
