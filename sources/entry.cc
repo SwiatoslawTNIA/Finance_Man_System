@@ -1,6 +1,20 @@
+//---------------------------------------------------------------------------------------------------------------------
+// entry.cc
+//
+// <Implementation of the entry class>
+//
+//---------------------------------------------------------------------------------------------------------------------
+//
 #include "entry.h"
 
-
+//---------------------------------------------------------------------------------------------------------------------
+///Entry contructor
+/// @param s1 the name of each entry
+/// @param str2 the comment for each entry
+/// @param val the value
+///
+/// @return the highest number
+//
 Entry::Entry(const char *st, const char *str2,  double val): value(val)
 {
    input = new char[strlen(st) + 1];
@@ -8,7 +22,8 @@ Entry::Entry(const char *st, const char *str2,  double val): value(val)
    strcpy(message, str2);
    strcpy(input, st);
 }
-
+//---------------------------------------------------------------------------------------------------------------------
+///Entry destructor
 Entry::~Entry()
 {
    if(input != nullptr)
@@ -16,7 +31,9 @@ Entry::~Entry()
    if(message != nullptr)
       delete [] message;
 }
-
+//---------------------------------------------------------------------------------------------------------------------
+///Entry copy contructor
+/// @param ref a const Entry reference to the object, from which a copy is created
 Entry::Entry(const Entry & ref)
 {
    this->value = ref.value;
@@ -25,7 +42,9 @@ Entry::Entry(const Entry & ref)
    strcpy(input, ref.input);
    strcpy(message, ref.message);
 }
-
+//---------------------------------------------------------------------------------------------------------------------
+///Assignment operator
+/// @param r the reference to the second obj, with with the addition will be performed
 Entry & Entry::operator=(const Entry & r)
 {
    if(this == &r)
@@ -39,7 +58,9 @@ Entry & Entry::operator=(const Entry & r)
    strcpy(input, r.input);
    return *this;
 }
-
+//---------------------------------------------------------------------------------------------------------------------
+///function display the information about the Entry class
+//
 void Entry::show(void) const 
 {
    using std::cout, std::endl;

@@ -1,3 +1,13 @@
+//---------------------------------------------------------------------------------------------------------------------
+// manage_entries.h
+//
+// <Header file for manage_entries.cc>
+//
+//---------------------------------------------------------------------------------------------------------------------
+//
+#ifndef MANAGE_ENTRIES
+#define MANAGE_ENTRIES
+
 #include <iostream>
 #include <fstream>
 #include <cstring>
@@ -36,3 +46,7 @@ void delete_entry(void);
 bool delete_from_file(const char *file);
 //other :
 static unsigned short int TAXES, EXPENSES;//static, each file has it's own copy
+
+#endif
+
+

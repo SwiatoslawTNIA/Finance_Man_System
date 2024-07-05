@@ -1,8 +1,16 @@
+//---------------------------------------------------------------------------------------------------------------------
+// print_m.h
+//
+// <header file for the print_m.cc>
+//
+//---------------------------------------------------------------------------------------------------------------------
+//
+
+#ifndef PRINT_M
+#define PRINT_M
+
 #include <iostream>
 #include <cstring>
-
-
-
 
 namespace print
 {
@@ -12,3 +20,6 @@ namespace print
    void get_name(void);
    void delete_name(void);
 }
+#endif
+
+

@@ -16,12 +16,9 @@
 #include "manage_entries.h"
 
 //other datatypes:
-
 enum TYPE{ADD_INCOME_TAXES, ADD_EXPENSE_ENTRIES, EDIT_ENTRY, DELETE_ENTRY};
-
 enum {DEF_BUFF_SIZE = 50};
-const char *arr_input[5] = {"add income", "add expense", 
-"edit", "delete entry", "display"};
+const char *arr_input[5] = {"add income", "add expense","edit", "delete", "display"};
 //function prototypes:
 void initialize(void);
 void print_welcome(void);

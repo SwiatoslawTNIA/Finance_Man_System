@@ -1,3 +1,10 @@
+//---------------------------------------------------------------------------------------------------------------------
+// print_m.cc
+//
+// <Print namespace implementation>
+//
+//---------------------------------------------------------------------------------------------------------------------
+//
 #include "print_m.h"
 
 extern char *entry_name;
@@ -24,6 +31,11 @@ namespace  print
       cout << "\t6.Display entry(Type \"display\")" << endl;
       cout << "> ";
    }
+   //---------------------------------------------------------------------------------------------------------------------
+   ///Dipslays the error message
+   ///
+   /// @return void
+   //
    void error_message(void)
    {
       cout << "Please try again!\n> " << std::flush;
@@ -38,7 +50,11 @@ namespace  print
        while(std::cin.get() != '\n')
          continue;
    }
-
+   //---------------------------------------------------------------------------------------------------------------------
+   ///sets the entry_name global pointer a value from stdin
+   ///
+   /// @return void
+   //
    void get_name(void)
    {
       clear_cin();
@@ -54,11 +70,15 @@ namespace  print
       strcpy(entry_name, buff);
       entry_name_length = strlen(entry_name);
    }
-   
+   //---------------------------------------------------------------------------------------------------------------------
+   ///helper-function for the delete_entry() method, initializes the entry_name pointer
+   ///
+   /// @return void
+   //
    void delete_name(void)
    {
       clear_cin();
-      std::cout << "\nPlease enter the name of the entry to delete (max 150 chars): \n> ";
+      std::cout << "\nPlease enter the name of the entry to delete (max 150 chars): \n> " << std::flush;
       std::string input;
       while(!(cin >> input))
       {

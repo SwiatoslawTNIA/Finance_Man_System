@@ -1,3 +1,12 @@
+//---------------------------------------------------------------------------------------------------------------------
+// string_op.cc
+//
+// <Implementations for the processing funcs>
+//
+//---------------------------------------------------------------------------------------------------------------------
+//
+
+
 #include "string_op.h"
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -55,7 +64,14 @@ bool same_strings(const char * s1, const char *s2)
   }
   return true;
 }
-
+//---------------------------------------------------------------------------------------------------------------------
+///filters the input from the file, helper-func
+///
+/// @param obj a ref to ifstream
+/// @param header_n a string (to use with diff strings)
+///
+/// @return the highest number
+//
 bool process_print(std::ifstream & obj, const char *header_n)
 {
   using std::cout, std::endl;//for output
@@ -111,7 +127,7 @@ bool process_print(std::ifstream & obj, const char *header_n)
          std::cout << endl << "-------------------------------------------------------------------------"
          << "---------------------------------\n";
          //we can encounter ]
-         if((c = obj.get()) == ']')//if we encouter the end of array, we exit
+         if((c = obj.get()) == ']' || obj.peek() == ']')//if we encouter the end of array, we exit
          {
             cout << endl;//flush the buffer + new_line
             break;//exit the loop;
@@ -126,6 +142,14 @@ bool process_print(std::ifstream & obj, const char *header_n)
    obj.close();
    return true;
 }
+//---------------------------------------------------------------------------------------------------------------------
+///speciflc algorithm for searching in the target for the source
+///
+/// @param target what to search
+/// @param source what must be included in target
+///
+/// @return the highest number
+//
 bool search_for_string(const char *target, const char *source)//target is always longer than source
 {
    bool same = true;
@@ -145,3 +169,7 @@ bool search_for_string(const char *target, const char *source)//target is always
    }
    return same;
 }
+
+
+
+

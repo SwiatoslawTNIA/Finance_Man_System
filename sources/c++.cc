@@ -4,12 +4,9 @@
 // <Finance managment system>
 // Manages Add, edit, and delete income and expense entries.
 // Save and load data from a file.
-
 //
 //---------------------------------------------------------------------------------------------------------------------
 //
-
-
 #include "c++.h"
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -34,6 +31,12 @@ int main(void)
   entry2 = entry1;
   return 0;
 }
+//---------------------------------------------------------------------------------------------------------------------
+///The function is the initialization func for the whole program
+/// @param void
+///
+/// @return void
+//
 void initialize(void)
 {
   std::cout << "Welcome to the finance managment system" << std::endl;

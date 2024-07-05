@@ -1,7 +1,5 @@
-[{"exp_type":"asdjfkl;","message":"asdjfkl;asdf","value":234.0},
-{"exp_type":"Another string has been edited","message":"Something","value":3.0}, 
-{"exp_type":"asdjfkl;","message":"asdjfkl;asdf","value":234.0}, 
-{"exp_type":"asdjfkl;","message":"asdjfkl;asdf","value":234.0}, 
-{"exp_type":"asdjfkl;","message":"asdjfkl;asdf","value":234.0}, 
-{"exp_type":"asdjfkl;","message":"asdjfkl;asdf","value":234.0}, 
-{"exp_type":"asdjfkl;","message":"asdjfkl;asdf","value":234.0} ]
+[{"exp_type":"Nothing","message":"Nothing","value":-2.0},
+{"exp_type":"Another string has been edited","message":"Something","value":3.0},
+{"exp_type":"something","message":"anything","value":-2.0},
+{"exp_type":"asdjfkl;","message":"asdjfkl;asdf","value":234.0},
+{"exp_type":"New job","message":"Job description","value":-12312.0}]
